@@ -97,78 +97,6 @@
         });
 
         function plot_points(data) {
-            
-            function agg_day(leaves) {
-                var source_coords = leaves.map(function(d) {
-                    var var_tmp = [];
-                    var_tmp.push(d.Dest);
-                    var_tmp.push(projection([+d.Dest_lon, +d.Dest_lat]));
-                    return var_tmp;
-                });
-
-                var target_coords = leaves.map(function(d) {
-                    var var_tmp = [];
-                    var_tmp.push(d.Origin);
-                    var_tmp.push(projection([+d.Origin_lon, +d.Origin_lat]));
-                    return var_tmp;
-                });
-
-                // target_nodes = [x: x coord, y: y coord, target: code]
-                var target_nodes = [];
-
-                // code_ind = {code0: 0, code1: 1, ... }
-                var code_ind = {};
-
-                // add the Dest into target_nodes and code_ind
-                var a = {};
-                a.x = source_coords[0][1][0];
-                a.y = source_coords[0][1][1];
-                a.target = source_coords[0][0];
-                target_nodes.push(a);
-
-                var ind = 1;
-
-                target_coords.forEach(function(d) {
-                    var a = {};
-                    a.x = d[1][0];
-                    a.y = d[1][1];
-                    a.target = d[0];
-
-                    target_nodes.push(a);
-
-                    code_ind[d[0]] = ind;
-                    ind++;
-                });
-
-                // nodes = [ {x: x coord, y: coord}, {x: x coord, y: coord}, ... ]
-                var nodes = [];
-
-                // links = [{target: 12, source: 0},{target: 12, source: 0}, ... ]
-                var links = [];
-
-                var start = 0;
-
-                target_nodes.forEach(function(d) {
-                    var a = {};
-                    a.x = d.x;
-                    a.y = d.y;
-                    nodes.push(a);
-
-                    var b = {};
-                    b.source = 0;
-                    if (start === 0) {
-                        start = 1;
-                    } else {
-                        b.target = code_ind[d.target];
-                        links.push(b);
-                    }
-                })
-
-                return {
-                  'nodes' : nodes,
-                  'links' : links
-                };
-            }
 
             var nested = d3.nest()
                            .key(function(d) {
@@ -187,6 +115,8 @@
                 return d['key'];
             }
 
+            nodes = [{'x'}]
+
             // apply mercator function to nodes
             nodes = nodes.map(function(d) {
                 var a = projection([+d.x, +d.y]);
@@ -200,10 +130,12 @@
             var links = [];
 
             data.forEach(function(d) {
-                var a = {}
-                a.target = code_to_ind[d.Dest];
-                a.source = code_to_ind[d.Origin];
-                links.push(a);
+                if (d.Dest === "LAS" && d.Origin === "DCA" && d.day === 3) {
+                    var a = {}
+                    a.target = code_to_ind[d.Dest];
+                    a.source = code_to_ind[d.Origin];
+                    links.push(a);
+                }
             })
 
             var force = d3.layout.force()
