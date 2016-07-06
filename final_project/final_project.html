@@ -145,13 +145,16 @@
 
             var nested = d3.nest()
                            .key(function(d) {
-                              return d['Dest'];
-                           })
-                           .key(function(d) {
-                              return d['day'];
+                              return d['id'];
                            })
                            // .rollup(agg_day)
-                           .entries(data);
+                           .entries(data.sort(function(a, b) { 
+                              if (b['id'] > a['id']) {
+                                return -1;
+                              } else {
+                                return 1;
+                              }
+                           }));
             debugger;
             // var attendance_max = d3.max(nested, function(d) {
             //     return d.values['attendance'];
@@ -280,7 +283,11 @@
       var format = d3.time.format("%d-%m-%Y (%H:%M h)");
 
       d3.csv("airport_filtered.csv", function(d) {
-        d['id'] = +d['id']
+        if (d['day'].length === 1) {
+            d['id'] = "0" + d['day']+"-"+d['Dest'];  
+        } else {
+            d['id'] = d['day']+"-"+d['Dest'];  
+        }
         d['Dest_lon'] = +d['Dest_lon']
         d['Dest_lat'] = +d['Dest_lat']
         d['Origin_lon'] = +d['Origin_lon']
