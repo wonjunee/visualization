@@ -27,6 +27,17 @@
         padding: 3px;
         margin: 7px;
       }
+
+      .node {
+          fill: #ccc;
+          stroke: #fff;
+          stroke-width: 1px;
+      }
+
+      .link {
+          stroke: #777;
+          stroke-width: 2px;
+      }
     </style>
     <script type="text/javascript">  
       function draw(geo_data) {
@@ -68,6 +79,22 @@
                      .style('fill', 'lightBlue')
                      .style('stroke', 'black')
                      .style('stroke-width', 0.5);
+
+        // Import nodes.csv file and save it as nodes
+        // nodes array = [{x: , y: } , ... ]
+        // code_to_ind = {LAS: 0, IND: 1, ... }
+        var nodes = [];
+        var code_to_ind = {};
+        d3.csv("nodes.csv", function(d) {
+            d.forEach(function(i) {
+                var a = {};
+                a.x = +i.lon;
+                a.y = +i.lat;
+                nodes.push(a)
+
+                code_to_ind[i['code']] = +i.ind;
+            });
+        });
 
         function plot_points(data) {
             
@@ -155,129 +182,155 @@
                                 return 1;
                               }
                            }));
-            debugger;
-            // var attendance_max = d3.max(nested, function(d) {
-            //     return d.values['attendance'];
-            // });
-
-            // var radius = d3.scale.sqrt()
-            //                .domain([0, attendance_max])
-            //                .range([0, 15]);
 
             function key_func(d) {
                 return d['key'];
             }
 
-            var nodes = [];
-            nested.forEach(function(d) {
-                var a = {};
-                a.x = d.x;
-                a.y = d.y;
-                nodes.push(a);
+            // apply mercator function to nodes
+            nodes = nodes.map(function(d) {
+                var a = projection([+d.x, +d.y]);
+                d.x = a[0];
+                d.y = a[1];
+                return d;
             })
+
+            debugger;
 
             var links = [];
 
+            data.forEach(function(d) {
+                var a = {}
+                a.target = code_to_ind[d.Dest];
+                a.source = code_to_ind[d.Origin];
+                links.push(a);
+            })
+
             var force = d3.layout.force()
-                          .size([width+margin, height+margin])
-                          .nodes(nested, function(d) {
-                            var a = {};
-                            a.x = d.x;
-                            a.y = d.y;
-                            return a;
-                          });
-                          // .links(nested, function(d) {})
-            svg.append('g')
-               .attr("class", "bubble")
-               .selectAll("circle")
-               .data(nested, key_func)
-               .enter()
-               .append("circle")
-               .attr('cx', function(d) { return d.values['x']; })
-               .attr('cy', function(d) { return d.values['y']; })
-               .attr('r', function(d) {
-                    return radius(d.values['attendance']);
-               })
+                          .size([width, height])
+                          .nodes(nodes)
+                          .links(links);
 
-          function update(day) {
-              var filtered = nested.filter(function(d) {
-                  return new d['day'] === day;
-              });
+            debugger;
 
-              d3.select("h2")
-                .text("January " + day + ", 2008");
+            // force.linkDistance(width/3.05);
 
-              var circles = svg.selectAll('circle')
-                               .data(filtered, key_func);
+            var link = svg.selectAll('.link')
+                          .data(links)
+                          .enter().append('line')
+                          .attr('class', 'link');
 
-              circles.exit().remove();
+            var node = svg.selectAll('.node')
+                          .data(nodes)
+                          .enter().append('circle')
+                          .attr('class', 'node');
 
-              circles.enter()
-                     .append("circle")
-                     .transition()
-                     .duration(500)
-                     .attr('cx', function(d) { return d.values['x']; })
-                     .attr('cy', function(d) { return d.values['y']; })
-                     .attr('r', function(d) {
-                        return radius(d.values['attendance']);
-                     });
+            force.on('end', function() {
+                node.attr('r', 3)
+                    .attr('cx', function(d) { return d.x; })
+                    .attr('cy', function(d) { return d.y; });
 
-              var countries = filtered[0].values['teams'];
+                link.attr('x1', function(d) {return d.source.x; })
+                    .attr('y1', function(d) {return d.source.y; })
+                    .attr('x2', function(d) {return d.target.x; })
+                    .attr('y2', function(d) {return d.target.y; });
+                debugger;
+            });
 
-              function update_countries(d) {
-                  if(countries.indexOf(d.properties.name) !== -1) {
-                      return "lightBlue";
-                  } else {
-                      return 'white';
-                  }
-              }
+            force.start();
 
-              svg.selectAll('path')
-                 .transition()
-                 .duration(500)
-                 .style('fill', update_countries)
-                 .style('stroke', update_countries);
+            debugger;
+            // svg.append('g')
+            //    .attr("class", "bubble")
+            //    .selectAll("circle")
+            //    .data(nested, key_func)
+            //    .enter()
+            //    .append("circle")
+            //    .attr('cx', function(d) { return d.values['x']; })
+            //    .attr('cy', function(d) { return d.values['y']; })
+            //    .attr('r', function(d) {
+            //         return radius(d.values['attendance']);
+            //    })
 
-          }
+          // function update(day) {
+          //     var filtered = nested.filter(function(d) {
+          //         return new d['day'] === day;
+          //     });
+
+          //     d3.select("h2")
+          //       .text("January " + day + ", 2008");
+
+          //     var circles = svg.selectAll('circle')
+          //                      .data(filtered, key_func);
+
+          //     circles.exit().remove();
+
+          //     circles.enter()
+          //            .append("circle")
+          //            .transition()
+          //            .duration(500)
+          //            .attr('cx', function(d) { return d.values['x']; })
+          //            .attr('cy', function(d) { return d.values['y']; })
+          //            .attr('r', function(d) {
+          //               return radius(d.values['attendance']);
+          //            });
+
+          //     var countries = filtered[0].values['teams'];
+
+          //     function update_countries(d) {
+          //         if(countries.indexOf(d.properties.name) !== -1) {
+          //             return "lightBlue";
+          //         } else {
+          //             return 'white';
+          //         }
+          //     }
+
+          //     svg.selectAll('path')
+          //        .transition()
+          //        .duration(500)
+          //        .style('fill', update_countries)
+          //        .style('stroke', update_countries);
+
+          // }
 
           var year_idx = 0;
 
-          var year_interval = setInterval(function() {
-            update(years[year_idx]);
+          // var year_interval = setInterval(function() {
+          //   update(years[year_idx]);
 
-            year_idx++;
+          //   year_idx++;
 
-            if(year_idx >= years.length) {
-                clearInterval(year_interval);
+          //   if(year_idx >= years.length) {
+          //       clearInterval(year_interval);
 
-                var buttons = d3.select("body")
-                        .append("div")
-                        .attr("class", "years_buttons")
-                        .selectAll("div")
-                        .data(years)
-                        .enter()
-                        .append("div")
-                        .text(function(d) {
-                            return d;
-                        });
+          //       var buttons = d3.select("body")
+          //               .append("div")
+          //               .attr("class", "years_buttons")
+          //               .selectAll("div")
+          //               .data(years)
+          //               .enter()
+          //               .append("div")
+          //               .text(function(d) {
+          //                   return d;
+          //               });
 
-                buttons.on("click", function(d) {
-                    d3.select(".years_buttons")
-                      .selectAll("div")
-                      .transition()
-                      .duration(500)
-                      .style("color", "black")
-                      .style("background", "rgb(251, 201, 127)");
+          //       buttons.on("click", function(d) {
+          //           d3.select(".years_buttons")
+          //             .selectAll("div")
+          //             .transition()
+          //             .duration(500)
+          //             .style("color", "black")
+          //             .style("background", "rgb(251, 201, 127)");
 
-                    d3.select(this)
-                      .transition()
-                      .duration(500)
-                      .style("background", "lightBlue")
-                      .style("color", "white");
-                    update(d);
-                });
-            }
-          }, 1000);
+          //           d3.select(this)
+          //             .transition()
+          //             .duration(500)
+          //             .style("background", "lightBlue")
+          //             .style("color", "white");
+          //           update(d);
+          //       });
+          //   }
+          // }, 1000);
       }
 
       var format = d3.time.format("%d-%m-%Y (%H:%M h)");
