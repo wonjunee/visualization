@@ -71,45 +71,88 @@
 
         function plot_points(data) {
             
-            // function agg_day(leaves) {
-            //     var total = d3.sum(leaves, function(d) {
-            //         return d['attendance'];
-            //     });
+            function agg_day(leaves) {
+                var source_coords = leaves.map(function(d) {
+                    var var_tmp = [];
+                    var_tmp.push(d.Dest);
+                    var_tmp.push(projection([+d.Dest_lon, +d.Dest_lat]));
+                    return var_tmp;
+                });
 
-            //     var coords = leaves.map(function(d) {
-            //         return projection([+d.long, +d.lat]);
-            //     });
+                var target_coords = leaves.map(function(d) {
+                    var var_tmp = [];
+                    var_tmp.push(d.Origin);
+                    var_tmp.push(projection([+d.Origin_lon, +d.Origin_lat]));
+                    return var_tmp;
+                });
 
-            //     var center_x = d3.mean(coords, function(d) {
-            //         return d[0];
-            //     });
+                // target_nodes = [x: x coord, y: y coord, target: code]
+                var target_nodes = [];
 
-            //     var center_y = d3.mean(coords, function(d) {
-            //         return d[1];
-            //     });
+                // code_ind = {code0: 0, code1: 1, ... }
+                var code_ind = {};
 
-            //     var teams = d3.set();
+                // add the Dest into target_nodes and code_ind
+                var a = {};
+                a.x = source_coords[0][1][0];
+                a.y = source_coords[0][1][1];
+                a.target = source_coords[0][0];
+                target_nodes.push(a);
 
-            //     leaves.forEach(function(d) {
-            //         teams.add(d['team1']);
-            //         teams.add(d['team2']);
-            //     });
+                var ind = 1;
 
-            //     return {
-            //       'attendance' : total,
-            //       'x' : center_x,
-            //       'y' : center_y,
-            //       'teams' : teams.values()
-            //     };
-            // }
+                target_coords.forEach(function(d) {
+                    var a = {};
+                    a.x = d[1][0];
+                    a.y = d[1][1];
+                    a.target = d[0];
+
+                    target_nodes.push(a);
+
+                    code_ind[d[0]] = ind;
+                    ind++;
+                });
+
+                // nodes = [ {x: x coord, y: coord}, {x: x coord, y: coord}, ... ]
+                var nodes = [];
+
+                // links = [{target: 12, source: 0},{target: 12, source: 0}, ... ]
+                var links = [];
+
+                var start = 0;
+
+                target_nodes.forEach(function(d) {
+                    var a = {};
+                    a.x = d.x;
+                    a.y = d.y;
+                    nodes.push(a);
+
+                    var b = {};
+                    b.source = 0;
+                    if (start === 0) {
+                        start = 1;
+                    } else {
+                        b.target = code_ind[d.target];
+                        links.push(b);
+                    }
+                })
+
+                return {
+                  'nodes' : nodes,
+                  'links' : links
+                };
+            }
 
             var nested = d3.nest()
                            .key(function(d) {
+                              return d['Dest'];
+                           })
+                           .key(function(d) {
                               return d['day'];
                            })
-                           // .rollup(agg_year)
+                           // .rollup(agg_day)
                            .entries(data);
-
+            debugger;
             // var attendance_max = d3.max(nested, function(d) {
             //     return d.values['attendance'];
             // });
@@ -122,12 +165,29 @@
                 return d['key'];
             }
 
+            var nodes = [];
+            nested.forEach(function(d) {
+                var a = {};
+                a.x = d.x;
+                a.y = d.y;
+                nodes.push(a);
+            })
+
+            var links = [];
+
+            var force = d3.layout.force()
+                          .size([width+margin, height+margin])
+                          .nodes(nested, function(d) {
+                            var a = {};
+                            a.x = d.x;
+                            a.y = d.y;
+                            return a;
+                          });
+                          // .links(nested, function(d) {})
             svg.append('g')
                .attr("class", "bubble")
                .selectAll("circle")
-               .data(nested.sort(function(a, b) { 
-                  return b.values['attendance'] - a.values['attendance'];
-               }), key_func)
+               .data(nested, key_func)
                .enter()
                .append("circle")
                .attr('cx', function(d) { return d.values['x']; })
@@ -136,13 +196,13 @@
                     return radius(d.values['attendance']);
                })
 
-          function update(year) {
+          function update(day) {
               var filtered = nested.filter(function(d) {
-                  return new Date(d['key']).getUTCFullYear() === year;
+                  return new d['day'] === day;
               });
 
               d3.select("h2")
-                .text("World Cup " + year);
+                .text("January " + day + ", 2008");
 
               var circles = svg.selectAll('circle')
                                .data(filtered, key_func);
