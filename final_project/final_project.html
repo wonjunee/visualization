@@ -59,8 +59,8 @@
                 .attr('class', 'map');
 
             var projection = d3.geo.mercator()
-                                   .scale(500)
-                                   .translate([width/.9, height / .8]);
+                                   .scale(700)
+                                   .translate([width/.75, height / .7]);
 
             var path = d3.geo.path().projection(projection);
 
@@ -200,7 +200,7 @@
                 });
                 debugger;
                 d3.select("h2")
-                  .text("From " + Origin);
+                  .text("Flight Paths From " + Origin);
 
                 var force = d3.layout.force()
                               .size([width+margin, height+margin])
@@ -255,10 +255,11 @@
 
                 function tick() {
                     lines.transition()
-                      .duration(50).attr("x1", function(d) { return d.source.x; })
-                            .attr("y1", function(d) { return d.source.y; })
-                            .attr("x2", function(d) { return d.target.x; })
-                            .attr("y2", function(d) { return d.target.y; });
+                         .duration(50)
+                         .attr("x1", function(d) { return d.source.x; })
+                         .attr("y1", function(d) { return d.source.y; })
+                         .attr("x2", function(d) { return d.target.x; })
+                         .attr("y2", function(d) { return d.target.y; });
 
                     circles.attr("cx", function(d) { return d.x; })
                         .attr("cy", function(d) { return d.y; });
@@ -272,7 +273,6 @@
                 Origins.push(d.name);
             });
 
-            debugger;
             var Origin_interval = setInterval(function() {
                 update(Origins[Origin_idx]);
 
@@ -306,6 +306,24 @@
                           .style("background", "lightBlue")
                           .style("color", "white");
                         update(d);
+                    });
+
+                    // var node = svg.selectAll('.node')
+                    //           .data(nodes)
+                    //           .enter().append('circle')
+                    //           .attr('class', 'node')
+                    //           .attr("r", 4.5)
+
+                    node.on("click", function(d) {
+                        d3.select(".days_buttons")
+                          .selectAll("div")
+                          .transition()
+                          .duration(500)
+                          .style("color", "black")
+                          .style("background", "rgb(251, 201, 127)");
+                        d3.select(this);
+                        debugger;
+                        update(d.name);
                     });
                 }
             }, 500);
