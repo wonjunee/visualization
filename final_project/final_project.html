@@ -57,17 +57,9 @@
             .append('g')
             .attr('class', 'map');
 
-        var years = [];
-
-          for(var i = 1930; i < 2015; i += 4) {
-            if(i !== 1942 && i !== 1946) {
-              years.push(i);
-            };
-          }
-
         var projection = d3.geo.mercator()
-                               .scale(140)
-                               .translate([width / 2, height / 1.2]);
+                               .scale(400)
+                               .translate([width/.95, height / .9]);
 
         var path = d3.geo.path().projection(projection);
 
@@ -88,13 +80,29 @@
         d3.csv("nodes.csv", function(d) {
             d.forEach(function(i) {
                 var a = {};
+                a.name = i.code;
+                a.id = +i.id;
                 a.x = +i.lon;
                 a.y = +i.lat;
+                a.fixed = true;
                 nodes.push(a)
 
                 code_to_ind[i['code']] = +i.ind;
             });
         });
+
+        var links = [];
+        d3.csv("edges.csv", function(d) {
+            d.forEach(function(i) {
+                var a = {};
+                a.source = +i.source;
+                a.target = +i.target;
+                links.push(a)
+            });
+        });
+
+        debugger;
+
 
         function plot_points(data) {
 
@@ -115,8 +123,8 @@
                 return d['key'];
             }
 
-            nodes = [{'x': -77.0438, 'y': 38.849},
-                     {'x': -115.143, 'y': 36.0806}];
+            // nodes = [{name: 'AA', x: -77.0438, y: 38.849, fixed:true},
+            //          {name: 'BB', x: -115.143, y: 36.0806, fixed:true}];
 
             // apply mercator function to nodes
             nodes = nodes.map(function(d) {
@@ -140,68 +148,68 @@
                .attr('stroke-width', 0.7)
                .attr('opacity', 0.7);
 
-
-            debugger;
-
-            var links = [];
-
-            data.forEach(function(d) {
-                if (d.Dest === "LAS" && d.Origin === "DCA" && d.day === 3) {
-                    var a = {}
-                    a.target = code_to_ind[d.Dest];
-                    a.source = code_to_ind[d.Origin];
-                    links.push(a);
-                }
-            })
-
-            links = [{'target':0, 'source':1}];
-
             var force = d3.layout.force()
                           .size([width+margin, height+margin])
                           .nodes(nodes)
-                          .links(links);
+                          .links(links)
+                          // .gravity(0.05)
+                          .distance(100)
+                          // .charge(-100)
+                          .start();
 
             debugger;
-
-            // force.linkDistance(width/2);
 
             var link = svg.selectAll('.link')
                           .data(links)
                           .enter().append('line')
-                          .attr('class', 'link');
+                          .attr('class', 'link')
+                          .attr("x1", function(d) { return d.source.x; })
+                          .attr("y1", function(d) { return d.source.y; })
+                          .attr("x2", function(d) { return d.target.x; })
+                          .attr("y2", function(d) { return d.target.y; });
+
+            var node_drag = d3.behavior.drag()
+                              .on("dragstart", dragstart)
+                              .on("drag", dragmove)
+                              .on("dragend", dragend);
 
             var node = svg.selectAll('.node')
                           .data(nodes)
                           .enter().append('circle')
-                          .attr('class', 'node');
+                          .attr('class', 'node')
+                          .attr("r", 4.5)
+                          .call(node_drag);
 
-            force.on('end', function() {
-                node.attr('r', 6)
-                    .attr('cx', function(d) { return d.x; })
-                    .attr('cy', function(d) { return d.y; });
+            function dragstart(d, i) {
+                force.stop();
+            }
 
-                link.attr('x1', function(d) {return d.source.x; })
-                    .attr('y1', function(d) {return d.source.y; })
-                    .attr('x2', function(d) {return d.target.x; })
-                    .attr('y2', function(d) {return d.target.y; });
-                debugger;
-            });
+            function dragmove(d, i) {
+                // d.px += d3.event.dx;
+                // d.py += d3.event.dy;
+                // d.x += d3.event.dx;
+                // d.y += d3.event.dy;
+                tick();
+            }
 
-            force.start();
+            function dragend(d, i) {
+                d.fixed = true;
+                tick();
+                force.resume();
+            }
 
-            debugger;
-            // svg.append('g')
-            //    .attr("class", "bubble")
-            //    .selectAll("circle")
-            //    .data(nested, key_func)
-            //    .enter()
-            //    .append("circle")
-            //    .attr('cx', function(d) { return d.values['x']; })
-            //    .attr('cy', function(d) { return d.values['y']; })
-            //    .attr('r', function(d) {
-            //         return radius(d.values['attendance']);
-            //    })
+            force.on("tick", tick);
 
+            function tick() {
+                link.attr("x1", function(d) { return d.source.x; })
+                    .attr("y1", function(d) { return d.source.y; })
+                    .attr("x2", function(d) { return d.target.x; })
+                    .attr("y2", function(d) { return d.target.y; });
+
+                node.attr("cx", function(d) { return d.x; })
+                    .attr("cy", function(d) { return d.y; });
+            }
+ 
           // function update(day) {
           //     var filtered = nested.filter(function(d) {
           //         return new d['day'] === day;
@@ -243,7 +251,7 @@
 
           // }
 
-          var year_idx = 0;
+          // var year_idx = 0;
 
           // var year_interval = setInterval(function() {
           //   update(years[year_idx]);
