@@ -88,16 +88,6 @@
                 });
             });
 
-            var links = [];
-            d3.csv("edges.csv", function(d) {
-                d.forEach(function(i) {
-                    var a = {};
-                    a.source = +i.source;
-                    a.target = +i.target;
-                    links.push(a)
-                });
-            });
-
             debugger;
 
             function plot_points(data) {
@@ -323,7 +313,6 @@
         d3.csv("edges.csv", function(d) {
             d['source'] = +d['source']
             d['target'] = +d['target']
-            d['day'] = +d['day']
             return d;
         }, plot_points);
     };
