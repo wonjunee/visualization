@@ -29,9 +29,10 @@
       }
 
       .node {
-          fill: #ccc;
-          stroke: #fff;
-          stroke-width: 1px;
+          fill: orange;
+        stroke: black;
+        stroke-width: 0.7;
+        opacity: 0.7;
       }
 
       .link {
@@ -77,6 +78,7 @@
             // nodes array = [{x: , y: } , ... ]
             // code_to_ind = {LAS: 0, IND: 1, ... }
             var nodes = [];
+            var code_edges = {};
             d3.csv("nodes.csv", function(d) {
                 d.forEach(function(i) {
                     var a = {};
@@ -86,10 +88,9 @@
                     a.y = +i.lat;
                     a.fixed = true;
                     nodes.push(a)
+                    code_edges[i.code] = +i.size;
                 });
             });
-
-            debugger;
 
             function plot_points(data) {
                 // nodes = [{name: 'AA', x: -77.0438, y: 38.849, fixed:true},
@@ -112,19 +113,16 @@
                     links.push(a)
                 });
 
-                svg.append('g')
-                   .attr("class", "bubble")
-                   .selectAll("circle")
-                   .data(nodes)
-                   .enter()
-                   .append("circle")
-                   .attr('cx', function(d) { return d['x']; })
-                   .attr('cy', function(d) { return d['y']; })
-                   .attr('r', 5)
-                   .attr('fill', 'rgb(247, 148, 32)')
-                   .attr('stroke', 'black')
-                   .attr('stroke-width', 0.7)
-                   .attr('opacity', 0.7);
+                
+                // Find the maximum number of edges from code_edges dictionary
+                var edges_max = d3.max(Object.keys(code_edges), function(key){ 
+                                        return code_edges[key]; 
+                                      });
+                
+                // Set the radius
+                var radius = d3.scale.sqrt()
+                           .domain([0, edges_max])
+                           .range([0, 15]);
 
                 var force = d3.layout.force()
                               .size([width+margin, height+margin])
@@ -134,8 +132,6 @@
                               .distance(100)
                               // .charge(-100)
                               .start();
-
-                debugger;
 
                 var link = svg.selectAll('.link')
                               .data(links)
@@ -155,7 +151,9 @@
                               .data(nodes)
                               .enter().append('circle')
                               .attr('class', 'node')
-                              .attr("r", 4.5)
+                              .attr("r", function(d) {
+                                  return radius(code_edges[d.name]);
+                              })
                               .call(node_drag);
 
                 function dragstart(d, i) {
