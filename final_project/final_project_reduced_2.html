@@ -113,8 +113,14 @@
                     a.target = +i.target;
                     links.push(a)
                 });
+                function agg_name(leaves) {
+                    
+
+                }
+                var nested = d3.nest()
+                           .rollup(agg_name)
+                           .entries(data);
                 debugger;
-                
                 // Find the maximum number of edges from code_edges dictionary
                 var edges_max = d3.max(Object.keys(code_edges), function(key){ 
                                         return code_edges[key]; 
