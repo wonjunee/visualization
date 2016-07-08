@@ -101,7 +101,7 @@ id_count-1
 
 
 
-There are total **134653** records in the saved csv file. Stil there are too many so I will filter the data further. First I will check the most frequently appeared **Destination** and **Origin**.
+There are total **2338** records in the saved csv file. Stil there are too many so I will filter the data further. First I will check the most frequently appeared **Destination** and **Origin**.
 
 
 ```python
