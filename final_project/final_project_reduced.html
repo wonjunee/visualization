@@ -49,7 +49,7 @@
 
             d3.select("body")
               .append("h2")
-              .text("World Cup ");
+              .text("Flight Paths ");
 
             var svg = d3.select("body")
                 .append("svg")
@@ -89,8 +89,8 @@
                     a.fixed = true;
                     nodes.push(a);
                     code_edges[i.code] = +i.size;
-                })
-            })
+                });
+            });
 
             debugger;
             function plot_points(data) {
@@ -103,7 +103,7 @@
                     d.x = a[0];
                     d.y = a[1];
                     return d;
-                })
+                });
 
                 // Create links array
                 var links = [];
@@ -111,7 +111,7 @@
                     var a = {};
                     a.source = +i.source;
                     a.target = +i.target;
-                    links.push(a)
+                    links.push(a);
                 });
                 debugger;
                 
@@ -161,8 +161,6 @@
                         .attr("y1", function(d) { return d.source.y; })
                         .attr("x2", function(d) { return d.target.x; })
                         .attr("y2", function(d) { return d.target.y; })
-                        .transition()
-                        .duration(200)
                         .attr("opacity", 1);
 
                     node.attr("cx", function(d) { return d.x; })
@@ -177,7 +175,7 @@
                         a.target = d.target;
                         a.source = d.source;
                         filtered.push(a);
-                    }
+                    };
                 });
 
                 d3.select("h2")
@@ -195,8 +193,10 @@
                               .start();
 
                 var line2 = svg.selectAll('.link')
-                                .data(filtered)
+                                .data(filtered);
+
                 line2.exit().remove();
+
                 line2.enter().append('line')
                     .attr("x1", function(d) { return d.source.x; })
                     .attr("y1", function(d) { return d.source.y; })
@@ -211,23 +211,23 @@
                               .attr('class', 'node')
                               .attr("r", function(d) {
                                         return radius(code_edges[d.name]);
-                                    });
+                              });
 
                 force2.stop();
-                tick();
-                force2.on("tick", tick);
+                tick2();
+                force2.on("tick", tick2);
 
                 function tick2() {
-                    line2.attr("x1", function(d) { return d.source.x; })
+                    line2.attr('class', 'link').attr("x1", function(d) { return d.source.x; })
                         .attr("y1", function(d) { return d.source.y; })
                         .attr("x2", function(d) { return d.target.x; })
                         .attr("y2", function(d) { return d.target.y; })
-                        // .transition()
-                        // .duration(50)
+                        .transition()
+                        .duration(50)
                         .attr("opacity", .7);
-
+                    debugger;
                     circles.attr("cx", function(d) { return d.x; })
-                        .attr("cy", function(d) { return d.y; });
+                           .attr("cy", function(d) { return d.y; });
                 };
             }
 
@@ -288,8 +288,8 @@
         }
 
         d3.csv("edges.csv", function(d) {
-            d['source'] = +d['source']
-            d['target'] = +d['target']
+            d['source'] = +d['source'];
+            d['target'] = +d['target'];
             return d;
         }, plot_points);
     };
