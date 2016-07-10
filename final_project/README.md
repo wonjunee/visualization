@@ -14,9 +14,12 @@ When the project starts, it shows the nodes and their edges one at a time. The o
 
 The nodes have different sizes of circles and the radius of circles are based on the number of edges of the nodes. I used only 30 airports because too many airports will only confuse readers without providing clear insights of the data.
 
-### *Changes after feedback*
+#### *Changes after feedback*
 
-### Feedback
+### Feedbacks
+
+#### Thomas Lee ####
+The visualization shows the flight pahts of the airports in the U.S. Clicking on each airport shows which airports the you can get to from the clicked aiport. It would be interesting to see the size of the circle representing each airport to expand, shrink, or even disappear depending on the number of flights.
 
 
 ### Resources
