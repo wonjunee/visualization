@@ -1,4 +1,4 @@
-# Visualizing Fligh Paths of US Airports
+# Visualizing Fligh Paths of Airlines In US
 ## Udacity Data Analyst Nanodegree
 ## Data Visualization Course Final Project
 
