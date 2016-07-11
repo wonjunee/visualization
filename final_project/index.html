@@ -111,7 +111,11 @@
             */
             var projection = d3.geo.mercator()
                                    .scale(800)
+<<<<<<< HEAD
                                    .translate([width/.68, height / .65]);
+=======
+                                   .translate([width/.65, height / .6]);
+>>>>>>> f695a3f4d39ce8f524b043297bd78f520bc67715
 
             var path = d3.geo.path().projection(projection);
 
@@ -124,14 +128,26 @@
                          .style('fill', function(d) {
                               if (d.properties.name === "USA"){
                                   return 'lightBlue';
+<<<<<<< HEAD
                               }
                               return 'white';
+=======
+                              } else {
+                                  return 'white';
+                              }
+>>>>>>> f695a3f4d39ce8f524b043297bd78f520bc67715
                          })
                          .style('stroke', function(d) {
                               if (d.properties.name === "USA"){
                                   return "black";
+<<<<<<< HEAD
                               }
                               return "white";
+=======
+                              } else {
+                                  return "white";
+                              }
+>>>>>>> f695a3f4d39ce8f524b043297bd78f520bc67715
                          })
                          .style('stroke-width', 0.5);
 
@@ -139,11 +155,18 @@
             var div = d3.select("body").append("div")
                         .attr("class", "tooltip")
                         .style("display", "none");
+<<<<<<< HEAD
             /*
             Import nodes.csv file and save it as nodes
             nodes array = [{x: , y: } , ... ]
             code_to_ind = {LAS: 0, IND: 1, ... }
             */
+=======
+
+            // Import nodes.csv file and save it as nodes
+            // nodes array = [{x: , y: } , ... ]
+            // code_to_ind = {LAS: 0, IND: 1, ... }
+>>>>>>> f695a3f4d39ce8f524b043297bd78f520bc67715
             var nodes = [];
             var code_edges = {};
 
@@ -172,7 +195,11 @@
                 // Save key and the number of flights into separate dictionary
                 var DO_flights = {};
                 data.forEach(function(d) {
+<<<<<<< HEAD
                     DO_flights[d['source'] + " " + d['target']] = d['flights'];
+=======
+                    DO_flights[d['source']+" "+d['target']] = d['flights'];
+>>>>>>> f695a3f4d39ce8f524b043297bd78f520bc67715
                 });
 
                 // Create links array
@@ -204,6 +231,7 @@
                            .domain([0, flights_max])
                            .range([.5, 10]);
 
+<<<<<<< HEAD
                 // Put legend for nodes
                 var legend = svg.append("g")
                     .attr("class", "legend")
@@ -260,6 +288,8 @@
                     });
 
                 // Set the force layout with nodes and links
+=======
+>>>>>>> f695a3f4d39ce8f524b043297bd78f520bc67715
                 var force = d3.layout.force()
                               .size([width+margin, height+margin])
                               .nodes(nodes)
@@ -276,8 +306,12 @@
                               .attr("y1", function(d) { return d.source.y; })
                               .attr("x2", function(d) { return d.target.x; })
                               .attr("y2", function(d) { return d.target.y; });
+<<<<<<< HEAD
                 
                 // Set the node and append circle elements 
+=======
+                   
+>>>>>>> f695a3f4d39ce8f524b043297bd78f520bc67715
                 var node = svg.selectAll('.node')
                               .data(nodes)
                               .enter().append('circle')
@@ -288,7 +322,11 @@
                               .on("mouseover", function(d) {   
                                   div
                                       .style("display", "inline")
+<<<<<<< HEAD
                                       .html("Airport: " + d.name + "<br/>" + code_edges[d.name] + " edges")  
+=======
+                                      .text("Airport: "+d.name+"\n"+code_edges[d.name]+" edges")  
+>>>>>>> f695a3f4d39ce8f524b043297bd78f520bc67715
                                       .style("left", (d3.event.pageX+10) + "px")   
                                       .style("top", (d3.event.pageY) + "px")
                                       .transition().duration(200).style("opacity",.7);  
@@ -297,8 +335,11 @@
                                   div.transition().duration(200).style("opacity", 0); 
                               });
 
+<<<<<<< HEAD
 
                 // Draw nodes and links using tick function
+=======
+>>>>>>> f695a3f4d39ce8f524b043297bd78f520bc67715
                 force.stop();
                 tick();
                 force.on("tick", tick);
@@ -374,17 +415,25 @@
                                   return radius(code_edges[d.name]);
                               });
                            
+<<<<<<< HEAD
                 // Draw nodes and links using tick function
+=======
+
+>>>>>>> f695a3f4d39ce8f524b043297bd78f520bc67715
                 force2.stop();
                 tick2();
                 force2.on("tick", tick2);
 
+<<<<<<< HEAD
                 /* 
                 tick2 function is same as tick function 
                 except it uses line2 and circles instaed of line and node
                 tick2 function will attribute the data 
                 to the coordinates when called.
                 */
+=======
+
+>>>>>>> f695a3f4d39ce8f524b043297bd78f520bc67715
                 function tick2() {
                     line2.attr('class', 'link').attr("x1", function(d) { return d.source.x; })
                         .attr("y1", function(d) { return d.source.y; })
@@ -393,7 +442,12 @@
                         .transition()
                         .duration(200)
                         .attr("stroke-width", function(d) {
+<<<<<<< HEAD
                             return width(DO_flights[d.source.id + " " + d.target.id]); 
+=======
+                            debugger; 
+                            return width(DO_flights[d.source.id+" "+d.target.id]); 
+>>>>>>> f695a3f4d39ce8f524b043297bd78f520bc67715
 
                         })
                         .attr("opacity", .7);

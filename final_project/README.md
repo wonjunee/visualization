@@ -21,10 +21,13 @@ After Thomas's feedback, I included the number of flights between two airports i
 After Seungmin's feedback, I removed other non-US countries from the map. Her suggestion made the visualization have more clarity. I will ignore her second suggestion about adding pictures of the airports because I don't think it will improve the visualization. 
 
 After Yuri's feedback, I added a feature so that when the mouse is over a circle then a tip box appears showing the name of the airport and the number of the edges.
+<<<<<<< HEAD
 
 **Changes after the first submission**
 
 I wrote the introduction and summary that enable readers to understand the visualization more clearly. The legends are now at the right hand side indicating the the number of edges represented by the size of the circle and the number of flights represented by the width of the edge. I wrote more comments on **index.html** to be more readable.
+=======
+>>>>>>> f695a3f4d39ce8f524b043297bd78f520bc67715
 
 ### Feedbacks
 
