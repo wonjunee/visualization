@@ -14,19 +14,31 @@ When the project starts, it shows the nodes and their edges one at a time. The o
 
 The nodes have different sizes of circles and the radius of circles are based on the number of edges of the nodes. I used only 30 airports because too many airports will only confuse readers without providing clear insights of the data.
 
-#### *Changes after feedback*
+**Changes after feedback**
+
+After Thomas's feedback, I included the number of flights between two airports in the **edges.csv** file. The number of flights is visualized by the widths of lines. When a user clicks a circle, the lines with different widths are shown where widths represent the number of flights between two nodes (airports).
+
+After Seungmin's feedback, I removed other non-US countries from the map. Her suggestion made the visualization have more clarity. I will ignore her second suggestion about adding pictures of the airports because I don't think it will improve the visualization. 
+
+After Yuri's feedback, I added a feature so that when the mouse is over a circle then a tip box appears showing the name of the airport and the number of the edges.
 
 ### Feedbacks
 
 #### Thomas Lee ####
-The visualization shows the flight pahts of the airports in the U.S. Clicking on each airport shows which airports the you can get to from the clicked aiport. It would be interesting to see the size of the circle representing each airport to expand, shrink, or even disappear depending on the number of flights.
+The visualization shows the flight paths of the airports in the U.S. Clicking on each airport shows which airports the you can get to from the clicked aiport. It would be interesting to see the size of the circle representing each airport to expand, shrink, or even disappear depending on the number of flights.
 
+#### Seungmin Lee ####
+*What i like about*: good visual representation where the planes are heading to.
+
+*Suggestions*: since its only deals with american flight, i think it's better to erase surrounding countries. Add pictures of the airport!
+
+#### Yuri Choi ####
+Nice visualization showing the routes of flights.
+
+It would be great if there is a pop up box that indicates the information of the airport when the mouse is on the circle.
 
 ### Resources
 
-I used the 2008 flight data from http://stat-computing.org/dataexpo/2009/the-data.html. The data don't contain the coordinate information of each airport so I used the second data from https://gist.githubusercontent.com/tdreyno/4278655/raw/7b0762c09b519f40397e4c3e100b097d861f5588/airports.json. To create a US map, I used world_countries.json from Visualization Course.
+I used the 2008 flight data from *http://stat-computing.org/dataexpo/2009/the-data.html*. The data don't contain the coordinate information of each airport so I used the second data from *https://gist.githubusercontent.com/tdreyno/4278655/raw/7b0762c09b519f40397e4c3e100b097d861f5588/airports.json*. To create a US map, I used *world_countries.json* from Visualization Course.
 
-Summary - in no more than 4 sentences, briefly introduce your data visualization and add any context that can help readers understand it
-Design - explain any design choices you made including changes to the visualization after collecting feedback
-Feedback - include all feedback you received from others on your visualization from the first sketch to the final visualization
-Resources - list any sources you consulted to create your visualization
+In order to create the visualization I mainly used the project from lesson 4 of **Data Visualization** course. I used *http://jsdatav.is/visuals.html?id=11560633* to create nodes and edges netweork visualization and used *http://bl.ocks.org/biovisualize/1016860* to create tooltips.

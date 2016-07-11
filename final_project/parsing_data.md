@@ -163,7 +163,7 @@ for i in range(1,31):
     ('MAF', 7)
 
 
-Above is the list of top **15** destinations that will be used in the data visualization project.
+Above is the list of top **30** names of airports that will be used in the data visualization project.
 
 
 ```python
