@@ -7,7 +7,7 @@
 ---
 Note
 ---------
-There is an error in D3 scripts for this repository so I created a new repository.
+There is an error in D3 script in this repository so I created a new repository.
 
 Please follow the link below to see the finalized visualization project.
 
